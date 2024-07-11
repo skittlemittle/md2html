@@ -1,9 +1,19 @@
-
-fun count_hashes cs =
+(* counts the number of consecutive "target" chars before the
+* next "closer" char, if any other char appears before the "closer"
+* it returns 0 (even if there are > 0 "target" chars)
+*
+* cs: char list
+* target: character to count
+* closer: caharacter to count till
+* *)
+fun count_char_till cs target closer =
     let fun aux ys acc =
         case ys of
-             #"#"::ys' => aux ys' (acc+1)
-           | #" "::ys' => acc
+            y::ys' => if y = target
+                       then aux ys' (acc+1)
+                       else if y = closer
+                       then acc
+                       else 0
            | _ => 0
     in
         aux cs 1
@@ -14,7 +24,7 @@ fun convert chars =
         case cs of
              #"\n"::(#"#"::rest) => #"\n"::(
                  let
-                     val level = count_hashes rest
+                     val level = count_char_till rest #"#" #" "
                      val rest' = List.drop(rest, level)
                      val lstr = Int.toString(level)
                      val ot = "<h"^lstr^">"
@@ -26,6 +36,15 @@ fun convert chars =
                  end
             )
            | #"\n"::(#"-"::(#" "::rest)) => extract_list rest
+           | #"\n"::(#"-"::rest) => 
+                let
+                    val dashes = count_char_till rest #"-" #" "
+                    val rest' = List.drop(rest, dashes)
+                in
+                    if dashes > 2
+                    then String.explode("<hr>")@ find rest'
+                    else #"\n"::(#"-" :: find rest)
+                end
            | c::cs' => c::find cs'
            | [] => []
 

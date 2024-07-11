@@ -25,3 +25,11 @@ val l3 = (headers "\n- c\n- g e \n- as\n-wom \n- gri")
 val l4 = (headers "\n- frog") = "<ul><li>frog</li></ul>"
 val l5 = (headers "\n- c\n- g e \n- as\n this is now just a p") =
     "<ul><li>c</li><li>g e </li><li>as</li></ul> this is now just a p"
+
+val h1 = (headers "\n--- ") = "<hr>"
+val h2 = (headers "\n-- --- --- \n---------- owo")
+    = "\n-- --- --- <hr>owo"
+val h3 = (headers "gamin ---\n gamin---\n--")
+    = "gamin ---\n gamin---\n--"
+val h4 = (headers "\n-- \n---\n-- \n \n----- \n --- \n-")
+    = "\n-- \n---\n-- \n <hr>\n --- \n-"
