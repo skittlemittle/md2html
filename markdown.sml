@@ -9,36 +9,40 @@ fun count_hashes cs =
         aux cs 1
     end
 
-fun he (f, cs) =
-    case cs of
-         #"\n"::(#"#"::rest) => #"\n"::(
-             let
-                 val level = count_hashes rest
-                 val rest' = List.drop(rest, level)
-                 val lstr = Int.toString(level)
-                 val ot = "<h"^lstr^">"
-                 val ct = "</h"^lstr^">"
-            in
-                if level < 7 andalso level > 0 then f rest' ot ct
-                else he (f,#"#"::rest)
-             end
-        )
-       | c::cs' => c::he(f,cs')
-       | [] => []
-
-(* returns a header
-* o_tag: opening header tag
-* c_tag: closing tag
-* *)
-fun extract_header_text chars o_tag c_tag =
-    let fun aux cs =
+fun convert chars =
+    let fun find cs =
         case cs of
-             #"\n"::cs' => String.explode(c_tag)
-                        @ he(extract_header_text,#"\n"::cs')
-           | top::cs' => top:: aux cs'
+             #"\n"::(#"#"::rest) => #"\n"::(
+                 let
+                     val level = count_hashes rest
+                     val rest' = List.drop(rest, level)
+                     val lstr = Int.toString(level)
+                     val ot = "<h"^lstr^">"
+                     val ct = "</h"^lstr^">"
+                in
+                    if level < 7 andalso level > 0
+                    then extract_header_text rest' ot ct
+                    else find (#"#"::rest)
+                 end
+            )
+           | c::cs' => c::find cs'
            | [] => []
+
+        (* returns a header
+        * cs:  text to begin putting in the header
+        * o_tag: opening header tag
+        * c_tag: closing tag
+        * *)
+        and extract_header_text cs o_tag c_tag =
+            let fun aux ys =
+                case ys of
+                     #"\n"::ys' => String.explode(c_tag)
+                                @ find(#"\n"::ys')
+                   | top::ys' => top:: aux ys'
+                   | [] => []
+            in
+                String.explode(o_tag) @ aux cs
+            end
     in
-        String.explode(o_tag) @ aux chars
+        find chars
     end
-
-

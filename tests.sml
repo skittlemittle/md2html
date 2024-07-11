@@ -1,6 +1,6 @@
 
 
-fun g_headers text = he (extract_header_text, explode text) 
+fun g_headers text = convert (explode text) 
 fun headers text = implode(g_headers text)
 
 val ht1 = (headers "\n# title\n##t2 \n### title3 \n####### title7\n")
