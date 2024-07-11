@@ -25,6 +25,7 @@ fun convert chars =
                     else find (#"#"::rest)
                  end
             )
+           | #"\n"::(#"-"::(#" "::rest)) => extract_list rest
            | c::cs' => c::find cs'
            | [] => []
 
@@ -42,6 +43,24 @@ fun convert chars =
                    | [] => []
             in
                 String.explode(o_tag) @ aux cs
+            end
+
+        (*returns a list*)
+        and extract_list cs =
+            let 
+                val o_tag = String.explode("<li>")
+                val c_tag = String.explode("</li>")
+                val n_tag = c_tag @ o_tag 
+                val opener = String.explode("<ul>") @ o_tag
+                val closer = c_tag @ String.explode("</ul>")
+                fun aux ys =
+                    case ys of
+                         #"\n"::(#"-"::(#" "::rest)) => n_tag @ aux rest
+                       | #"\n"::rest => closer @ find rest
+                       | y::ys' => y::aux ys'
+                       | [] => closer
+            in
+                opener @ aux cs
             end
     in
         find chars
