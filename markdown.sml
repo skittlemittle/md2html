@@ -1,4 +1,3 @@
-val input_text = "\n# title\n #im #sippin that mad pass out \n## title 2 \n ua";
 
 fun count_hashes cs =
     let fun aux ys acc =
@@ -43,6 +42,3 @@ fun extract_header_text chars o_tag c_tag =
     end
 
 
-val process = he (extract_header_text, explode input_text) 
-
-val ps = implode process

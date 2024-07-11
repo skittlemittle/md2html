@@ -11,3 +11,6 @@ val ht4 = (headers "\n#### t 4 \n##### f ive\n###### 6\n")
     = "\n<h4>t 4 </h4>\n<h5>f ive</h5>\n<h6>6</h6>\n"
 val ht6 = (headers "\n### #real \n") = "\n<h3>#real </h3>\n"
 val ht7 = (headers "\n##### \n") = "\n<h5></h5>\n"
+val ht8 = (headers "\n# title\n #im #sippin that mad pass out \n## title 2\nua")
+ = "\n<h1>title</h1>\n #im #sippin that mad pass out \n<h2>title 2</h2>\nua"
+
