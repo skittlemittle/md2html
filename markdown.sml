@@ -50,7 +50,7 @@ fun convert chars =
                 in
                     if level < 7 andalso level > 0
                     then extract_header_text rest' ot ct
-                    else extract_p (#"#"::rest)
+                    else extract_p (#"#"::rest) false
                  end
             )
            | #"\n"::(#"-"::(#" "::rest)) => extract_list rest
@@ -61,9 +61,9 @@ fun convert chars =
                 in
                     if dashes > 2
                     then String.explode("<hr>")@ find rest'
-                    else extract_p (#"-"::rest)
+                    else extract_p (#"-"::rest) false
                 end
-           | #"\n"::rest => extract_p rest
+           | #"\n"::rest => extract_p rest false
            | c::cs' => c::find cs'
            | [] => []
 
@@ -101,18 +101,32 @@ fun convert chars =
                 opener @ aux cs
             end
 
-        and extract_p cs =
-            let fun aux ys =
-                case ys of
+        and extract_p cs continue =
+            let 
+                val p_c = String.explode("</p>")
+                fun aux ys = case ys of
                      #"\n"::(y::ys') =>
                         if is_starter (y::ys')
-                        then String.explode("</p>") @ find (#"\n"::(y::ys'))
+                        then p_c @ find (#"\n"::(y::ys'))
                         else aux (y::ys')
-                   | y::ys' => y::aux ys'
-                   | [] => String.explode("</p>")
+                   | y::ys' => (case y::ys' of
+                         #"*"::(#"*"::(r::j)) => extract_bold (r::j)
+                       | _ => y::aux ys')
+                   | [] => p_c
             in
-                if cs = [] then []
-                else String.explode("<p>") @ aux cs
+                if cs = [] then (if continue then p_c else [])
+                else if not continue then String.explode("<p>") @ aux cs
+                      else aux cs
+            end
+
+        and extract_bold cs =
+            let fun aux ys = case ys of
+                 #"*"::(#"*"::rest) =>
+                    (String.explode("</b>") @ extract_p rest true)
+               | y::ys' => y::aux ys'
+               | [] => String.explode("</b>") @ extract_p [] true
+            in
+                String.explode("<b>") @ aux cs
             end
 
     in

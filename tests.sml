@@ -38,3 +38,12 @@ val p1 = (headers "\n got some real stuf thsta got some real\nthings in it #very
 = "<p> got some real stuf thsta got some realthings in it #very</p><p> good for you</p>"
 val p2 = (headers "\n") = ""
 val p3 = (headers "\n\n") = "<p>\n</p>"
+
+val b1 = (headers "\nyeah we **talking** talking in this\n **y**")
+= "<p>yeah we <b>talking</b> talking in this <b>y</b></p>"
+val b2 = (headers "\n**") = "<p>**</p>"
+val b3 = (headers "\n**yeag") = "<p><b>yeag</b></p>"
+val b4 = (headers "\n **bold****also bold** **also**")
+= "<p> <b>bold</b><b>also bold</b> <b>also</b></p>"
+val b5 = (headers "\n**bol** **also bol** ** **\n")
+= "<p><b>bol</b> <b>also bol</b> <b> </b>\n</p>"
