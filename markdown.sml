@@ -111,6 +111,7 @@ fun convert chars =
                         else aux (y::ys')
                    | y::ys' => (case y::ys' of
                          #"*"::(#"*"::(r::j)) => extract_bold (r::j)
+                       | #"*"::r => extract_em r
                        | _ => y::aux ys')
                    | [] => p_c
             in
@@ -127,6 +128,16 @@ fun convert chars =
                | [] => String.explode("</b>") @ extract_p [] true
             in
                 String.explode("<b>") @ aux cs
+            end
+
+        and extract_em cs =
+            let fun aux ys = case ys of
+                 #"*"::rest => 
+                    String.explode("</em>") @ extract_p rest true
+               | y::ys' => y::aux ys'
+               | [] => String.explode("</em>") @ extract_p [] true
+            in
+                String.explode("<em>") @ aux cs
             end
 
     in

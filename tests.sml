@@ -41,9 +41,15 @@ val p3 = (headers "\n\n") = "<p>\n</p>"
 
 val b1 = (headers "\nyeah we **talking** talking in this\n **y**")
 = "<p>yeah we <b>talking</b> talking in this <b>y</b></p>"
-val b2 = (headers "\n**") = "<p>**</p>"
 val b3 = (headers "\n**yeag") = "<p><b>yeag</b></p>"
 val b4 = (headers "\n **bold****also bold** **also**")
 = "<p> <b>bold</b><b>also bold</b> <b>also</b></p>"
 val b5 = (headers "\n**bol** **also bol** ** **\n")
 = "<p><b>bol</b> <b>also bol</b> <b> </b>\n</p>"
+
+val em1 = (headers "\n**") = "<p><em></em></p>"
+val em2 = (headers "\ngaming chair and *regular* chari")
+= "<p>gaming chair and <em>regular</em> chari</p>"
+val em3 = (headers "\n*stra") = "<p><em>stra</em></p>"
+val em4 = (headers "\n*one* *two* *three* *four")
+= "<p><em>one</em> <em>two</em> <em>three</em> <em>four</em></p>"
