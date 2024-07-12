@@ -19,6 +19,24 @@ fun count_char_till cs target closer =
         aux cs 1
     end
 
+(*are the next chars the beginning of:
+* a header
+* a list
+* an <hr>
+* a new paragraph
+* *)
+fun is_starter cs =
+    let
+        fun level cs' c = count_char_till cs' c #" "
+    in
+    case cs of
+         #"-"::(#" "::rest) => true
+       | #"-"::rest => (level rest #"-") > 2
+       | #"#"::rest => (level rest #"#") < 7 andalso (level rest #"#") > 0
+       | #"\n"::rest => true
+       | _ => false
+    end
+
 fun convert chars =
     let fun find cs =
         case cs of
@@ -32,7 +50,7 @@ fun convert chars =
                 in
                     if level < 7 andalso level > 0
                     then extract_header_text rest' ot ct
-                    else find (#"#"::rest)
+                    else extract_p (#"#"::rest)
                  end
             )
            | #"\n"::(#"-"::(#" "::rest)) => extract_list rest
@@ -43,8 +61,9 @@ fun convert chars =
                 in
                     if dashes > 2
                     then String.explode("<hr>")@ find rest'
-                    else #"\n"::(#"-" :: find rest)
+                    else extract_p (#"-"::rest)
                 end
+           | #"\n"::rest => extract_p rest
            | c::cs' => c::find cs'
            | [] => []
 
@@ -81,6 +100,21 @@ fun convert chars =
             in
                 opener @ aux cs
             end
+
+        and extract_p cs =
+            let fun aux ys =
+                case ys of
+                     #"\n"::(y::ys') =>
+                        if is_starter (y::ys')
+                        then String.explode("</p>") @ find (#"\n"::(y::ys'))
+                        else aux (y::ys')
+                   | y::ys' => y::aux ys'
+                   | [] => String.explode("</p>")
+            in
+                if cs = [] then []
+                else String.explode("<p>") @ aux cs
+            end
+
     in
         find chars
     end
