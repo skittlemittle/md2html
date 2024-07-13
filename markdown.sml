@@ -101,6 +101,10 @@ fun convert chars =
                 opener @ aux cs
             end
 
+        (*returns a paragraph
+        * continue: is this a continuation of a paragraph or
+        *           the start of a new one?
+        * *)
         and extract_p cs continue =
             let 
                 val p_c = String.explode("</p>")
@@ -112,6 +116,7 @@ fun convert chars =
                    | y::ys' => (case y::ys' of
                          #"*"::(#"*"::(r::j)) => extract_bold (r::j)
                        | #"*"::r => extract_em r
+                       | #"`"::r => extract_inline_code r
                        | _ => y::aux ys')
                    | [] => p_c
             in
@@ -131,13 +136,25 @@ fun convert chars =
             end
 
         and extract_em cs =
+            extract_pair_tag cs #"*" "<em>" "</em>"
+
+        and extract_inline_code cs =
+            extract_pair_tag cs #"`" "<code>" "</code>"
+
+        (* extracts paire tags like `code` and *italics*
+        * tag: the tag char
+        * opener: html opening tag
+        * closer: html closing tag
+        * *)
+        and extract_pair_tag cs tag opener closer =
             let fun aux ys = case ys of
-                 #"*"::rest => 
-                    String.explode("</em>") @ extract_p rest true
-               | y::ys' => y::aux ys'
-               | [] => String.explode("</em>") @ extract_p [] true
+                 y::ys' =>
+                       if y = tag
+                       then String.explode(closer) @ extract_p ys' true
+                       else y::aux ys'
+               | [] => String.explode(closer) @ extract_p [] true
             in
-                String.explode("<em>") @ aux cs
+                String.explode(opener) @ aux cs
             end
 
     in

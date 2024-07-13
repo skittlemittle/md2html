@@ -53,3 +53,17 @@ val em2 = (headers "\ngaming chair and *regular* chari")
 val em3 = (headers "\n*stra") = "<p><em>stra</em></p>"
 val em4 = (headers "\n*one* *two* *three* *four")
 = "<p><em>one</em> <em>two</em> <em>three</em> <em>four</em></p>"
+
+val icode1 = (headers "\n`code`")
+= "<p><code>code</code></p>"
+val icode2 = (headers "\n some text `and then some code` and then text")
+= "<p> some text <code>and then some code</code> and then text</p>"
+val icode3 = (headers "\n``") = "<p><code></code></p>"
+val icode4 = (headers "\n`c` `l` `u`")
+= "<p><code>c</code> <code>l</code> <code>u</code></p>"
+val icode5  = (headers "\n`c` grime `u")
+= "<p><code>c</code> grime <code>u</code></p>"
+
+val fenced1 = (headers "\n```c```")
+val fenced2 = (headers "\n```stuff\n and morestff```")
+val fenced3 = (headers "\n```stuff\n `f` ff```")
