@@ -192,25 +192,27 @@ fun convert chars =
                    | [] => []
 
                 fun aux ys acc =
-                let fun a2 zs = extract_text zs #")" in
-                    case ys of
-                         #"]"::(#"("::ys') =>
-                            if is_matched ys' #")"
-                            then (#1 acc, a2 ys')
-                            else acc
-                       | y::ys' => aux ys' (y:: (#1 acc), [])
-                       | [] => acc
-                end
-                    
+                    let fun a2 zs = extract_text zs #")" in
+                        case ys of
+                             #"]"::(#"("::ys') =>
+                                if is_matched ys' #")"
+                                then (#1 acc, a2 ys')
+                                else acc
+                           | y::ys' => aux ys' ((#1 acc) @ [y], [])
+                           | [] => acc
+                    end
 
                 val link_content = if is_matched cs #"]"
                                    then aux cs ([],[])
                                    else ([],[])
+                val lc_length = length(#1 link_content) + length (#2
+                link_content)
+                val cont = List.drop(cs, lc_length) (*[]() - initial [ = 3*)
             in
-                if #1 link_content <> []
-                (*  <a href="https://www.w3schools.com">Visit W3Schools.com!</a>  *)
+                if #1 link_content <> [] andalso #2 link_content <> []
                 then String.explode("<a href='") @ #2 link_content @
-                String.explode("'>") @  #1 link_content @ String.explode("</a>")
+                    String.explode("'>") @  #1 link_content @ String.explode("</a>")
+                    @ extract_p cont true
                 else extract_p cs true
             end
 
