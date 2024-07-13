@@ -37,6 +37,17 @@ fun is_starter cs =
        | _ => false
     end
 
+(* returns true if tag occurs before a \n or string end
+* false otherwise *)
+fun is_matched cs tag =
+    case cs of
+         c::cs' => 
+            if c = tag andalso c <> #"\n"
+            then true
+            else is_matched cs' tag
+       | [] => false
+
+
 fun convert chars =
     let fun find cs =
         case cs of
@@ -118,6 +129,7 @@ fun convert chars =
                          #"*"::(#"*"::(r::j)) => extract_bold (r::j)
                        | #"*"::r => extract_em r
                        | #"`"::r => extract_inline_code r
+                       | #"["::r => extract_link r
                        | _ => y::aux ys')
                    | [] => p_c
             in
@@ -169,6 +181,37 @@ fun convert chars =
                        | [] => c_t
             in
                 o_t @ aux cs
+            end
+
+        and extract_link cs =
+            let fun extract_text ys s =
+                case ys of
+                     y::ys' => if y = s
+                               then []
+                               else y::extract_text ys' s
+                   | [] => []
+
+                fun aux ys acc =
+                let fun a2 zs = extract_text zs #")" in
+                    case ys of
+                         #"]"::(#"("::ys') =>
+                            if is_matched ys' #")"
+                            then (#1 acc, a2 ys')
+                            else acc
+                       | y::ys' => aux ys' (y:: (#1 acc), [])
+                       | [] => acc
+                end
+                    
+
+                val link_content = if is_matched cs #"]"
+                                   then aux cs ([],[])
+                                   else ([],[])
+            in
+                if #1 link_content <> []
+                (*  <a href="https://www.w3schools.com">Visit W3Schools.com!</a>  *)
+                then String.explode("<a href='") @ #2 link_content @
+                String.explode("'>") @  #1 link_content @ String.explode("</a>")
+                else extract_p cs true
             end
 
     in

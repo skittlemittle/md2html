@@ -71,3 +71,9 @@ val fenced3 = (headers "\n```stuff\n `f` ff```")
 = "<pre><code>stuff\n `f` ff</code></pre>"
 val fenced4 = (headers "\n``` \n### greasy \n- grimy \n- slimy \n \n *owo*```")
 = "<pre><code> \n### greasy \n- grimy \n- slimy \n \n *owo*</code></pre>"
+
+val link1 = (headers "\ntext [cow](last.fm) text")
+val link2 = (headers "\n[cow(last.fm)")
+val link3 = (headers "\n cow](last.fm)")
+val link4 = (headers "\n [cow]last.fm)")
+val link5 = (headers "\n [cow](last.fm")
