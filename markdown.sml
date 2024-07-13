@@ -185,14 +185,13 @@ fun convert chars =
 
         and extract_link cs =
             let fun extract_text ys s =
-                case ys of
-                     y::ys' => if y = s
-                               then []
-                               else y::extract_text ys' s
-                   | [] => []
+                    if length ys > 1 andalso hd ys <> s
+                    then (hd ys)::extract_text (tl ys) s
+                    else []
 
                 fun aux ys acc =
-                    let fun a2 zs = extract_text zs #")" in
+                    let fun a2 zs = extract_text zs #")"
+                    in
                         case ys of
                              #"]"::(#"("::ys') =>
                                 if is_matched ys' #")"
@@ -205,13 +204,16 @@ fun convert chars =
                 val link_content = if is_matched cs #"]"
                                    then aux cs ([],[])
                                    else ([],[])
-                val lc_length = length(#1 link_content) + length (#2
-                link_content)
-                val cont = List.drop(cs, lc_length) (*[]() - initial [ = 3*)
+                val lc_length = length(#1 link_content) + length (#2 link_content)
+                val cont = List.drop(cs, lc_length +
+                        (if length cs >= lc_length + 3 then 3 else 0))
             in
                 if #1 link_content <> [] andalso #2 link_content <> []
-                then String.explode("<a href='") @ #2 link_content @
-                    String.explode("'>") @  #1 link_content @ String.explode("</a>")
+                then String.explode("<a href='")
+                    @ #2 link_content
+                    @ String.explode("'>") 
+                    @ #1 link_content
+                    @ String.explode("</a>")
                     @ extract_p cont true
                 else extract_p cs true
             end
