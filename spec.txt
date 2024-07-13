@@ -1,0 +1,86 @@
+== headings ==
+
+1 to 6 hashes at line start followed by a space,
+then any text, then a newline
+
+\n# yap\n  ->  <h1>yap</h1>
+\n## yap \n -> <h2>yap </h2>
+etc
+
+== lists ==
+
+single dash followed by a space, then any text, then newline
+
+- one
+- two
+- three
+- four
+- five
+
+becomes
+
+<ul>
+<li>one</li>
+<li>two</li>
+etc you get it
+</ul>
+
+=== paragraphs ===
+After all other possible tags are checked for
+the next \n* starts a paragraph, then a \n\n or \n# or \n-
+terminates the paragraph. 
+
+if the string ends at an point inside a paragraph the closing
+</p> will always be applied (no unmatched html tags)
+
+yap yap yap yap
+yap yap
+
+yap yap yap
+
+becomes
+
+<p>yap yap yap yap
+yap yap</p>
+
+<p>yap yap yap</p>
+
+--- inline code ---
+inside a paragraph ` starts a code segment then ` or string end closes it
+
+--- em ---
+same as inline code but with *
+
+--- bold ---
+inside a paragraph ** starts a bold segment then ** or string
+end closes it
+
+== horizontal rule ===
+newline then > 3 dashes = horizontal rule
+\n--- -> <hr/>
+
+
+== links ==
+
+inside a paragraph [text](url) is a link
+- nothing between ] and (
+- no newlines within [] or ()
+
+== code ==
+
+newline then ``` starts fenced code, then ``` or string end
+closes it
+
+```
+yap yap yap
+ yap
+```
+
+becomes
+
+<pre><code>
+yap yap yap
+ yap
+</code></pre>
+
+
