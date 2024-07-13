@@ -63,6 +63,7 @@ fun convert chars =
                     then String.explode("<hr>")@ find rest'
                     else extract_p (#"-"::rest) false
                 end
+           | #"\n"::(#"`"::(#"`"::(#"`"::rest))) => extract_fenced_code rest
            | #"\n"::rest => extract_p rest false
            | c::cs' => c::find cs'
            | [] => []
@@ -141,7 +142,7 @@ fun convert chars =
         and extract_inline_code cs =
             extract_pair_tag cs #"`" "<code>" "</code>"
 
-        (* extracts paire tags like `code` and *italics*
+        (* extracts paired tags like `code` and *italics*
         * tag: the tag char
         * opener: html opening tag
         * closer: html closing tag
@@ -155,6 +156,19 @@ fun convert chars =
                | [] => String.explode(closer) @ extract_p [] true
             in
                 String.explode(opener) @ aux cs
+            end
+
+        and extract_fenced_code cs =
+            let
+                val o_t = String.explode("<pre><code>")
+                val c_t = String.explode("</code></pre>")
+                fun aux ys =
+                    case ys of
+                         #"`"::(#"`"::(#"`"::r)) => c_t @ find r
+                       | y::ys' => y::aux ys'
+                       | [] => c_t
+            in
+                o_t @ aux cs
             end
 
     in

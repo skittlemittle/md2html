@@ -64,6 +64,10 @@ val icode4 = (headers "\n`c` `l` `u`")
 val icode5  = (headers "\n`c` grime `u")
 = "<p><code>c</code> grime <code>u</code></p>"
 
-val fenced1 = (headers "\n```c```")
+val fenced1 = (headers "\n```c```") ="<pre><code>c</code></pre>"
 val fenced2 = (headers "\n```stuff\n and morestff```")
+= "<pre><code>stuff\n and morestff</code></pre>"
 val fenced3 = (headers "\n```stuff\n `f` ff```")
+= "<pre><code>stuff\n `f` ff</code></pre>"
+val fenced4 = (headers "\n``` \n### greasy \n- grimy \n- slimy \n \n *owo*```")
+= "<pre><code> \n### greasy \n- grimy \n- slimy \n \n *owo*</code></pre>"
